@@ -1,9 +1,6 @@
 package br.com.copadomorro.backend.controller;
 
-import br.com.copadomorro.backend.dto.AcessDTO;
-import br.com.copadomorro.backend.dto.AuthenticationDTO;
-import br.com.copadomorro.backend.dto.UserDTO;
-import br.com.copadomorro.backend.dto.UserViewDTO;
+import br.com.copadomorro.backend.dto.*;
 import br.com.copadomorro.backend.service.AuthService;
 import br.com.copadomorro.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +20,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping(value = "/SingUp")
-    public ResponseEntity<?> insertNewUser(@RequestBody UserDTO newUser) {
+    public ResponseEntity<?> insertNewUser(@RequestBody NewUserDTO newUser) {
         try {
             UserViewDTO userInsert = userService.insert(newUser);
             return ResponseEntity.status(HttpStatus.CREATED).body(userInsert);

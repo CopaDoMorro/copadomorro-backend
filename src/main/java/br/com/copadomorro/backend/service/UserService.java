@@ -1,5 +1,6 @@
 package br.com.copadomorro.backend.service;
 
+import br.com.copadomorro.backend.dto.NewUserDTO;
 import br.com.copadomorro.backend.dto.UserDTO;
 import br.com.copadomorro.backend.dto.UserUpdateDTO;
 import br.com.copadomorro.backend.dto.UserViewDTO;
@@ -24,6 +25,20 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public UserViewDTO insert(UserDTO userDTO) {
+        try {
+            validateUser(userDTO);
+            User user = new User(userDTO);
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setSituationType(UserSituationType.PENDING);
+            user.setId(null);
+            User savedUser = userRepository.save(user);
+            return new UserViewDTO(savedUser);
+        } catch (Exception e) {
+            throw new UserServiceException("Erro ao criar novo usuário", e);
+        }
+    }
+
+    public UserViewDTO insert(NewUserDTO userDTO) {
         try {
             validateUser(userDTO);
             User user = new User(userDTO);
@@ -124,6 +139,11 @@ public class UserService {
             throw new UserServiceException("E-mail já cadastrado: " + user.getEmail());
         }
 
+        validateCnpjAndCpf(user);
+    }
+
+    private void validateCnpjAndCpf(UserDTO user) {
+        //ToDo: Faz
         if (!isNullOrEmpty(user.getCpf()) && userRepository.findByCpf(user.getCpf()).isPresent()) {
             throw new UserServiceException("Cpf já cadastrado: " + user.getCpf());
         }
