@@ -136,7 +136,7 @@ public class UserService {
         }
     }
 
-    private boolean hasInvalidField(NewUserDTO userDTO) {
+    private static boolean hasInvalidField(NewUserDTO userDTO) {
         if (isNullOrEmpty(userDTO.getName())
                 || isNullOrEmpty(userDTO.getEmail())
                 || isNullOrEmpty(userDTO.getPassword())
@@ -150,9 +150,9 @@ public class UserService {
         return str == null || str.trim().isEmpty();
     }
 
-    private void validatePassword(NewUserDTO userDTO) {
+    private static void validatePassword(NewUserDTO userDTO) {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
-            throw new UserServiceException("Erro: as senhas devem ser iguais");
+            throw new UserServiceException("Erro: As senhas devem ser iguais");
         }
     }
 }

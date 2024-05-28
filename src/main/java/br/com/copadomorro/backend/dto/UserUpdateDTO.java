@@ -16,6 +16,9 @@ public class UserUpdateDTO {
         BeanUtils.copyProperties(user, this);
     }
 
+    public UserUpdateDTO(){
+    }
+
     public String getName() {
         return name;
     }

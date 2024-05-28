@@ -32,7 +32,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userDTO) {
         try {
             UserViewDTO userUpdated = userService.update(userDTO);
