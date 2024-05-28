@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authDto) {
+    public ResponseEntity<?> login(@RequestBody AuthenticationDTO authDto) {    
         try {
             AcessDTO token = authService.login(authDto);
             return ResponseEntity.status(HttpStatus.OK).body(token);
