@@ -1,7 +1,6 @@
 package br.com.copadomorro.backend.dto;
 
 import br.com.copadomorro.backend.entity.User;
-import br.com.copadomorro.backend.entity.enums.UserSituationType;
 import org.springframework.beans.BeanUtils;
 
 public class UserDTO {

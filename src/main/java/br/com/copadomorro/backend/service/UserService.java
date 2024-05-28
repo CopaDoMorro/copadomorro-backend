@@ -5,7 +5,6 @@ import br.com.copadomorro.backend.dto.UserDTO;
 import br.com.copadomorro.backend.dto.UserUpdateDTO;
 import br.com.copadomorro.backend.dto.UserViewDTO;
 import br.com.copadomorro.backend.entity.User;
-import br.com.copadomorro.backend.entity.enums.UserSituationType;
 import br.com.copadomorro.backend.exceptions.UserServiceException;
 import br.com.copadomorro.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +23,12 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserViewDTO insert(UserDTO userDTO) {
-        try {
-            validateUser(userDTO);
-            User user = new User(userDTO);
-            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setSituationType(UserSituationType.PENDING);
-            user.setId(null);
-            User savedUser = userRepository.save(user);
-            return new UserViewDTO(savedUser);
-        } catch (Exception e) {
-            throw new UserServiceException("Erro ao criar novo usuário", e);
-        }
-    }
-
     public UserViewDTO insert(NewUserDTO userDTO) {
         try {
             validateUser(userDTO);
+            validatePassword(userDTO);
             User user = new User(userDTO);
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setSituationType(UserSituationType.PENDING);
             user.setId(null);
             User savedUser = userRepository.save(user);
             return new UserViewDTO(savedUser);
@@ -130,7 +115,7 @@ public class UserService {
         }
     }
 
-    private void validateUser(UserDTO user) {
+    private void validateUser(NewUserDTO user) {
         if (user == null || hasInvalidField(user)) {
             throw new UserServiceException("Dados de usuário inválidos");
         }
@@ -138,27 +123,24 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new UserServiceException("E-mail já cadastrado: " + user.getEmail());
         }
-
-        validateCnpjAndCpf(user);
+        //validateCnpjAndCpf(user);
     }
 
     private void validateCnpjAndCpf(UserDTO user) {
-        //ToDo: Faz
+        //ToDo: Fazer validação de cpf e cnpj
         if (!isNullOrEmpty(user.getCpf()) && userRepository.findByCpf(user.getCpf()).isPresent()) {
             throw new UserServiceException("Cpf já cadastrado: " + user.getCpf());
         }
-
         if (!isNullOrEmpty(user.getCnpj()) && userRepository.findByCnpj(user.getCnpj()).isPresent()) {
             throw new UserServiceException("Cnpj já cadastrado: " + user.getCnpj());
         }
     }
 
-    private boolean hasInvalidField(UserDTO userDTO) {
+    private boolean hasInvalidField(NewUserDTO userDTO) {
         if (isNullOrEmpty(userDTO.getName())
                 || isNullOrEmpty(userDTO.getEmail())
                 || isNullOrEmpty(userDTO.getPassword())
-                || isNullOrEmpty(userDTO.getType())
-                || (isNullOrEmpty(userDTO.getCnpj()) && isNullOrEmpty(userDTO.getCpf()))) {
+                || isNullOrEmpty(userDTO.getConfirmPassword())) {
             return true;
         }
         return false;
@@ -166,5 +148,11 @@ public class UserService {
 
     private static boolean isNullOrEmpty(String str) {
         return str == null || str.trim().isEmpty();
+    }
+
+    private void validatePassword(NewUserDTO userDTO) {
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            throw new UserServiceException("Erro: as senhas devem ser iguais");
+        }
     }
 }
