@@ -1,5 +1,11 @@
 # Etapa 1: Construção
-FROM maven:3.9.2-eclipse-temurin-21 AS build
+FROM ubuntu:latest AS build
+
+# Atualiza o repositório e instala o JDK 21 e Maven
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jdk \
+    maven \
+    && rm -rf /var/lib/apt/lists/*
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -9,10 +15,15 @@ COPY pom.xml .
 COPY src ./src
 
 # Executa o comando de construção do Maven
-RUN mvn clean package -DskipTests
+RUN mvn clean install -DskipTests
 
 # Etapa 2: Execução
-FROM eclipse-temurin:21-jdk
+FROM ubuntu:latest
+
+# Atualiza o repositório e instala o JRE 21
+RUN apt-get update && apt-get install -y \
+    openjdk-21-jre-headless \
+    && rm -rf /var/lib/apt/lists/*
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
