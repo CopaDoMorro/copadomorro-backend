@@ -7,7 +7,7 @@ COPY . .
 RUN mvn clean install
 
 # Fase final
-FROM eclipse-temurin:21-jdk-slim
+FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 EXPOSE 8080
